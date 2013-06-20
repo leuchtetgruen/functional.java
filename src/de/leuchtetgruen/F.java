@@ -34,8 +34,8 @@ public class F {
 		public Object reduce(Object memo, Object o);
 	}
 	
-	public static interface Decider {
-		public boolean decide(Object o);
+	public static interface Decider<T> {
+		public boolean decide(T o);
 	}
 	
 	public static interface Cloneable {
@@ -118,7 +118,7 @@ public class F {
 	}
 	
 	// FILTER
-	public static <T> List<T> filter(Collection<T> c,Decider r) {
+	public static <T> List<T> filter(Collection<T> c,Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: c) {
 			if (r.decide(o)) ret.add(o);
@@ -126,7 +126,7 @@ public class F {
 		return ret;
 	}
 	
-	public static <T> T[] filter(T[] arr, Decider r) {
+	public static <T> T[] filter(T[] arr, Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: arr) {
 			if (r.decide(o)) ret.add(o);
@@ -137,14 +137,14 @@ public class F {
 	}
 	
 	// FIND
-	public static <T> T find(Collection<T> c, Decider r) {
+	public static <T> T find(Collection<T> c, Decider<T> r) {
 		for (T o: c) {
 			if (r.decide(o)) return o;
 		}
 		return null;
 	}
 	
-	public static <T> T find(T[] arr, Decider r) {
+	public static <T> T find(T[] arr, Decider<T> r) {
 		for (T o: arr) {
 			if (r.decide(o)) return o;
 		}
@@ -152,7 +152,7 @@ public class F {
 	}
 	
 	// REJECT
-	public static <T> List<T> reject(Collection<T> c,Decider r) {
+	public static <T> List<T> reject(Collection<T> c,Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: c) {
 			if (!r.decide(o)) ret.add(o);
@@ -160,7 +160,7 @@ public class F {
 		return ret;
 	}
 	
-	public static <T> Object[] reject(T[] arr, Decider r) {
+	public static <T> Object[] reject(T[] arr, Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: arr) {
 			if (!r.decide(o)) ret.add(o);
@@ -171,51 +171,51 @@ public class F {
 	}
 	
 	// ISVALIDFORALL
-	public static boolean isValidForAll(Collection<?> c, Decider r) {
+	public static <T> boolean isValidForAll(Collection<T> c, Decider<T> r) {
 		boolean all = true;
-		for (Object o: c) {
+		for (T o: c) {
 			all = all && r.decide(o);
 		}
 		return all;
 	}
 	
-	public static boolean isValidForAll(Object[] arr, Decider r) {
+	public static <T >boolean isValidForAll(T[] arr, Decider<T> r) {
 		boolean all = true;
-		for (Object o: arr) {
+		for (T o: arr) {
 			all = all && r.decide(o);
 		}
 		return all;
 	}
 	
 	// ISVALIDFORANY
-	public static boolean isValidForAny(Collection<?> c, Decider r) {
+	public static <T> boolean isValidForAny(Collection<T> c, Decider<T> r) {
 		boolean all = false;
-		for (Object o: c) {
+		for (T o: c) {
 			all = all || r.decide(o);
 		}
 		return all;
 	}
 	
-	public static boolean isValidForAny(Object[] arr, Decider r) {
+	public static <T> boolean isValidForAny(T[] arr, Decider<T> r) {
 		boolean all = false;
-		for (Object o: arr) {
+		for (T o: arr) {
 			all = all || r.decide(o);
 		}
 		return all;
 	}
 	
 	// COUNTVALIDENTRIES
-	public static int countValidEntries(Collection<?> c, Decider r) {
+	public static <T> int countValidEntries(Collection<T> c, Decider<T> r) {
 		int count = 0;
-		for (Object o : c) {
+		for (T o : c) {
 			if (r.decide(o)) count++;
 		}
 		return count;
 	}
 	
-	public static int countValidEntries(Object[] arr, Decider r) {
+	public static <T> int countValidEntries(T[] arr, Decider<T> r) {
 		int count = 0;
-		for (Object o : arr) {
+		for (T o : arr) {
 			if (r.decide(o)) count++;
 		}
 		return count;
