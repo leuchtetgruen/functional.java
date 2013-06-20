@@ -57,15 +57,15 @@ public class F {
 		}
 	}
 	
-	public static void each(HashMap<Object, Object> map, HashRunner r) {
-		Set<Object> s = map.keySet();
+	public static void each(HashMap<?, ?> map, HashRunner r) {
+		Set<?> s = map.keySet();
 		for (Object k : s) {
 			r.run(k, map.get(k));
 		}
 	}
 	
 	// MAP
-	public static List<Object> map(Collection<?> c, Mapper r) {
+	public static List<?> map(Collection<?> c, Mapper r) {
 		ArrayList<Object> ret = new ArrayList<Object>();
 		for (Object o : c) {
 			ret.add(r.map(o));
@@ -97,52 +97,56 @@ public class F {
 	}
 	
 	// FILTER
-	public static List<Object> filter(Collection<?> c,Decider r) {
-		ArrayList<Object> ret = new ArrayList<Object>();
-		for (Object o: c) {
+	public static <T> List<T> filter(Collection<T> c,Decider r) {
+		ArrayList<T> ret = new ArrayList<T>();
+		for (T o: c) {
 			if (r.decide(o)) ret.add(o);
 		}
 		return ret;
 	}
 	
-	public static Object[] filter(Object[] arr, Decider r) {
-		ArrayList<Object> ret = new ArrayList<Object>();
-		for (Object o: arr) {
+	public static <T> T[] filter(T[] arr, Decider r) {
+		ArrayList<T> ret = new ArrayList<T>();
+		for (T o: arr) {
 			if (r.decide(o)) ret.add(o);
 		}
-		return ret.toArray(new Object[ret.size()]);
+		@SuppressWarnings("unchecked")
+		T[] array = (T[]) new Object[ret.size()];
+		return ret.toArray(array);
 	}
 	
 	// FIND
-	public static Object find(Collection<?> c, Decider r) {
-		for (Object o: c) {
+	public static <T> T find(Collection<T> c, Decider r) {
+		for (T o: c) {
 			if (r.decide(o)) return o;
 		}
 		return null;
 	}
 	
-	public static Object find(Object[] arr, Decider r) {
-		for (Object o: arr) {
+	public static <T> T find(T[] arr, Decider r) {
+		for (T o: arr) {
 			if (r.decide(o)) return o;
 		}
 		return null;
 	}
 	
 	// REJECT
-	public static List<Object> reject(Collection<?> c,Decider r) {
-		ArrayList<Object> ret = new ArrayList<Object>();
-		for (Object o: c) {
+	public static <T> List<T> reject(Collection<T> c,Decider r) {
+		ArrayList<T> ret = new ArrayList<T>();
+		for (T o: c) {
 			if (!r.decide(o)) ret.add(o);
 		}
 		return ret;
 	}
 	
-	public static Object[] reject(Object[] arr, Decider r) {
-		ArrayList<Object> ret = new ArrayList<Object>();
-		for (Object o: arr) {
+	public static <T> Object[] reject(T[] arr, Decider r) {
+		ArrayList<T> ret = new ArrayList<T>();
+		for (T o: arr) {
 			if (!r.decide(o)) ret.add(o);
 		}
-		return ret.toArray(new Object[ret.size()]);
+		@SuppressWarnings("unchecked")
+		T[] array = (T[]) new Object[ret.size()];
+		return ret.toArray(array);
 	}
 	
 	// ISVALIDFORALL
@@ -197,24 +201,22 @@ public class F {
 	}
 	
 	// SORT
-	public static List<?> sortWithoutCopy(List<?> c, Comparator<Object> r) {
+	public static <T> List<T> sortWithoutCopy(List<T> c, Comparator<Object> r) {
 		Collections.sort(c, r);
 		return c;
 	}
 	
-	public static Object[] sortWithoutCopy(Object[] arr, Comparator<Object> r) {
-		Object[] copy = arr.clone();
+	public static <T> T[] sortWithoutCopy(T[] arr, Comparator<Object> r) {
+		T[] copy = arr.clone();
 		Arrays.sort(copy, r);
 		return copy;
 	}
 	
 	// MIN
-	public static Object min(Collection<?> c, final Comparator<Object> r) {
+	@SuppressWarnings("unchecked")
+	public static <T> T min(Collection<T> c, final Comparator<Object> r) {
 		Object min = null;
-		return reduce(c, new Reducer() {
-			
-			@Override
-			@SuppressWarnings("unchecked")
+		return (T) reduce(c, new Reducer() {
 			public Object reduce(Object memo, Object o) {
 				if (memo == null) return o;
 				
@@ -231,12 +233,10 @@ public class F {
 		}, min);
 	}
 	
-	public static Object min(Object[] arr, final Comparator<Object> r) {
+	@SuppressWarnings("unchecked")
+	public static <T> T min(T[] arr, final Comparator<Object> r) {
 		Object min = null;
-		return reduce(arr, new Reducer() {
-			
-			@Override
-			@SuppressWarnings("unchecked")
+		return (T) reduce(arr, new Reducer() {
 			public Object reduce(Object memo, Object o) {
 				if (memo == null) return o;
 				
@@ -254,12 +254,10 @@ public class F {
 	}
 	
 	// MAX
-	public static Object max(Collection<?> c, final Comparator<Object> r) {
+	@SuppressWarnings("unchecked")
+	public static <T> T max(Collection<T> c, final Comparator<Object> r) {
 		Object max = null;
-		return reduce(c, new Reducer() {
-			
-			@SuppressWarnings("unchecked")
-			@Override
+		return (T) reduce(c, new Reducer() {
 			public Object reduce(Object memo, Object o) {
 				if (memo == null) return o;
 				
@@ -276,12 +274,10 @@ public class F {
 		}, max);
 	}
 	
-	public static Object max(Object[] arr, final Comparator<Object> r) {
+	@SuppressWarnings("unchecked")
+	public static <T> T max(T[] arr, final Comparator<Object> r) {
 		Object max = null;
-		return reduce(arr, new Reducer() {
-			
-			@Override
-			@SuppressWarnings("unchecked")
+		return (T) reduce(arr, new Reducer() {
 			public Object reduce(Object memo, Object o) {
 				if (memo == null) return o;
 				
@@ -299,14 +295,13 @@ public class F {
 	}
 	
 	// GROUP
-	public static HashMap<Object, Object> group(Collection<?> c, Mapper r) {
-		HashMap<Object, Object> ret = new HashMap<Object, Object>();
-		for (Object o: c) {
+	public static <T> HashMap<Object, List<T>> group(Collection<T> c, Mapper r) {
+		HashMap<Object, List<T>> ret = new HashMap<Object, List<T>>();
+		for (T o: c) {
 			Object mapped = r.map(o);
-			@SuppressWarnings("unchecked")
-			ArrayList<Object> list = (ArrayList<Object>) ret.get(mapped);
+			ArrayList<T> list = (ArrayList<T>) ret.get(mapped);
 			if (list==null) {
-				list = new ArrayList<Object>();
+				list = new ArrayList<T>();
 			}
 			list.add(o);
 			ret.put(mapped, list);
@@ -315,14 +310,13 @@ public class F {
 		return ret;
 	}
 	
-	public static HashMap<Object, Object> group(Object[] arr, Mapper r) {
-		HashMap<Object, Object> ret = new HashMap<Object, Object>();
-		for (Object o: arr) {
+	public static <T> HashMap<Object, List<T>> group(T[] arr, Mapper r) {
+		HashMap<Object, List<T>> ret = new HashMap<Object, List<T>>();
+		for (T o: arr) {
 			Object mapped = r.map(o);
-			@SuppressWarnings("unchecked")
-			ArrayList<Object> list = (ArrayList<Object>) ret.get(mapped);
+			ArrayList<T> list = (ArrayList<T>) ret.get(mapped);
 			if (list==null) {
-				list = new ArrayList<Object>();
+				list = new ArrayList<T>();
 			}
 			list.add(o);
 			ret.put(mapped, list);
@@ -365,7 +359,7 @@ public class F {
 			}
 		}; 
 		
-		public static void iterateOverGroup(HashMap<Object, Object> group, final GroupIterator i) {
+		public static <T> void iterateOverGroup(HashMap<Object, List<T>> group, final GroupIterator i) {
 			each(group, new HashRunner() {
 				public void run(Object k, Object v) {
 					i.onNewGroup(k);

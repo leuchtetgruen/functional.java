@@ -19,6 +19,8 @@ public class Test {
 		testSortWithoutCopy(arr, c);
 		testMinMax(arr, c);
 		testGroup(arr, c);
+		
+		
 	}
 
 	private static void testEach(String[] arr, List<String> c) {
