@@ -81,6 +81,24 @@ public class F {
 		return ret.toArray(new Object[ret.size()]);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> mapT(Object[] arr, Mapper r, Class<T> t) {
+		ArrayList<T> ret = new ArrayList<T>();
+		for (Object o : arr) {
+			ret.add((T) r.map(o));
+		}
+		return ret;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> mapT(Collection<?> c, Mapper r, Class<T> t) {
+		ArrayList<T> ret = new ArrayList<T>();
+		for (Object o : c) {
+			ret.add((T) r.map(o));
+		}
+		return ret;
+	}
+	
 	// REDUCE
 	public static Object reduce(Collection<?> c, Reducer r, Object memo) {
 		for (Object o : c) {

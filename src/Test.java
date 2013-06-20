@@ -20,7 +20,6 @@ public class Test {
 		testMinMax(arr, c);
 		testGroup(arr, c);
 		
-		
 	}
 
 	private static void testEach(String[] arr, List<String> c) {
