@@ -113,6 +113,21 @@ public class F {
 		return ret.toArray(new Object[ret.size()]);
 	}
 	
+	// FIND
+	public static Object find(Collection<?> c, Decider r) {
+		for (Object o: c) {
+			if (r.decide(o)) return o;
+		}
+		return null;
+	}
+	
+	public static Object find(Object[] arr, Decider r) {
+		for (Object o: arr) {
+			if (r.decide(o)) return o;
+		}
+		return null;
+	}
+	
 	// REJECT
 	public static List<Object> reject(Collection<?> c,Decider r) {
 		ArrayList<Object> ret = new ArrayList<Object>();

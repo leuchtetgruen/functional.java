@@ -14,7 +14,7 @@ public class Test {
 		testEach(arr,c);
 		testMap(arr, c);
 		testReduce(arr, c);
-		testFilterAndReject(arr, c);
+		testFilterAndRejectAndFind(arr, c);
 		testAnyAllCountValid(arr, c);
 		testSortWithoutCopy(arr, c);
 		testMinMax(arr, c);
@@ -67,8 +67,8 @@ public class Test {
 		}
 	};
 	
-	private static void testFilterAndReject(String[] arr, List<String> c) {
-		System.out.println("Testing -> filter and reject");
+	private static void testFilterAndRejectAndFind(String[] arr, List<String> c) {
+		System.out.println("Testing -> filter and reject and find");
 		
 		F.Utils.print(F.filter(arr, moreThanOneWordDecider));
 		System.out.println("--");
@@ -77,6 +77,9 @@ public class Test {
 		F.Utils.print(F.reject(arr, moreThanOneWordDecider));
 		System.out.println("--");
 		F.Utils.print(F.reject(c, moreThanOneWordDecider));
+		System.out.println("~");
+		System.out.println(F.find(arr, moreThanOneWordDecider));
+		System.out.println(F.find(c, moreThanOneWordDecider));
 	}
 	
 	private static void testAnyAllCountValid(String[] arr, List<String> c) {
