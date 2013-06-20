@@ -18,16 +18,16 @@ import java.util.Set;
  */
 public class F {
 	// INTERFACES
-	public static interface Runner {
-		public void run(Object o);
+	public static interface Runner<T> {
+		public void run(T o);
 	};
 	
-	public static interface HashRunner {
-		public void run(Object k, Object v);
+	public static interface HashRunner<T,U> {
+		public void run(T k, U v);
 	}
 	
-	public static interface Mapper {
-		public Object map(Object o);
+	public static interface Mapper<T,U> {
+		public U map(T o);
 	}
 	
 	public static interface Reducer {
@@ -48,59 +48,43 @@ public class F {
 	
 	
 	// EACH
-	public static void each(Collection<?> c, Runner r) {
-		for (Object o : c) {
+	public static <T> void each(Collection<T> c, Runner<T> r) {
+		for (T o : c) {
 			r.run(o);
 		}
 	}
 	
-	public static void each(Object[] arr, Runner r) {
-		for (Object o : arr) {
+	public static <T> void each(T[] arr, Runner<T> r) {
+		for (T o : arr) {
 			r.run(o);
 		}
 	}
 	
-	public static void each(HashMap<?, ?> map, HashRunner r) {
-		Set<?> s = map.keySet();
-		for (Object k : s) {
+	public static <T,U> void each(HashMap<T, U> map, HashRunner<T,U> r) {
+		Set<T> s = map.keySet();
+		for (T k : s) {
 			r.run(k, map.get(k));
 		}
 	}
 	
 	// MAP
-	public static List<?> map(Collection<?> c, Mapper r) {
-		ArrayList<Object> ret = new ArrayList<Object>();
-		for (Object o : c) {
+	public static <T,U> List<U> map(Collection<T> c, Mapper<T,U> r) {
+		ArrayList<U> ret = new ArrayList<U>();
+		for (T o : c) {
 			ret.add(r.map(o));
 		}
 		return ret;
 	}
 	
-	public static Object[] map(Object[] arr, Mapper r) {
-		ArrayList<Object> ret = new ArrayList<Object>();
-		for (Object o : arr) {
+	public static <T,U> List<U> map(T[] arr, Mapper<T,U> r) {
+		ArrayList<U> ret = new ArrayList<U>();
+		for (T o : arr) {
 			ret.add(r.map(o));
 		}
-		return ret.toArray(new Object[ret.size()]);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> List<T> mapT(Object[] arr, Mapper r, Class<T> t) {
-		ArrayList<T> ret = new ArrayList<T>();
-		for (Object o : arr) {
-			ret.add((T) r.map(o));
-		}
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static <T> List<T> mapT(Collection<?> c, Mapper r, Class<T> t) {
-		ArrayList<T> ret = new ArrayList<T>();
-		for (Object o : c) {
-			ret.add((T) r.map(o));
-		}
-		return ret;
-	}
+	
 	
 	// REDUCE
 	public static Object reduce(Collection<?> c, Reducer r, Object memo) {
@@ -126,7 +110,7 @@ public class F {
 		return ret;
 	}
 	
-	public static <T> T[] filter(T[] arr, Decider<T> r) {
+	public static <T> Object[] filter(T[] arr, Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: arr) {
 			if (r.decide(o)) ret.add(o);
@@ -304,10 +288,10 @@ public class F {
 	}
 	
 	// GROUP
-	public static <T> HashMap<Object, List<T>> group(Collection<T> c, Mapper r) {
-		HashMap<Object, List<T>> ret = new HashMap<Object, List<T>>();
+	public static <T, U> HashMap<U, List<T>> group(Collection<T> c, Mapper<T,U> r) {
+		HashMap<U, List<T>> ret = new HashMap<U, List<T>>();
 		for (T o: c) {
-			Object mapped = r.map(o);
+			U mapped = r.map(o);
 			ArrayList<T> list = (ArrayList<T>) ret.get(mapped);
 			if (list==null) {
 				list = new ArrayList<T>();
@@ -319,10 +303,10 @@ public class F {
 		return ret;
 	}
 	
-	public static <T> HashMap<Object, List<T>> group(T[] arr, Mapper r) {
-		HashMap<Object, List<T>> ret = new HashMap<Object, List<T>>();
+	public static <T, U> HashMap<U, List<T>> group(T[] arr, Mapper<T,U> r) {
+		HashMap<U, List<T>> ret = new HashMap<U, List<T>>();
 		for (T o: arr) {
-			Object mapped = r.map(o);
+			U mapped = r.map(o);
 			ArrayList<T> list = (ArrayList<T>) ret.get(mapped);
 			if (list==null) {
 				list = new ArrayList<T>();
@@ -336,18 +320,19 @@ public class F {
 	
 	// UTILS
 	public static class Utils {
-		public static F.Runner printer = new F.Runner() {
-			public void run(Object o) {
+		
+		public static class Printer<T> implements Runner<T> {
+			public void run(T o) {
 				System.out.println(o);
 			}
-		};
-		
-		public static void print(Collection<?> c) {
-			each(c, printer);
 		}
 		
-		public static void print(Object[] arr) {
-			each(arr, printer);
+		public static <T> void print(Collection<T> c) {
+			each(c, new Printer<T>());
+		}
+		
+		public static <T> void print(T[] arr) {
+			each(arr, new Printer<T>());
 		}
 		
 		public static interface GroupIterator {
@@ -368,20 +353,23 @@ public class F {
 			}
 		}; 
 		
-		public static <T> void iterateOverGroup(HashMap<Object, List<T>> group, final GroupIterator i) {
-			each(group, new HashRunner() {
-				public void run(Object k, Object v) {
+		public static <T, U> void iterateOverGroup(HashMap<T, List<U>> group, final GroupIterator i) {
+			each(group, new HashRunner<T,List<U>>() {
+				public void run(T k, List<U> v) {
 					i.onNewGroup(k);
-					@SuppressWarnings("unchecked")
-					List<Object> l = (List<Object>) v;
-					each(l, new Runner() {
-						public void run(Object o) {
+					List<U> l = (List<U>) v;
+					each(l, new Runner<U>() {
+						public void run(U o) {
 							i.onNewEntry(o);
 						}						
 					});
 				}
 			});
 		}
+		
+		public static int COMPARATOR_FIRST_IS_GREATER 	= -1;
+		public static int COMPARATOR_BOTH_ARE_EQUAL		= 0;
+		public static int COMPARATOR_SECOND_IS_GREATER 	= 1;
 		
 		public static int intCompare(int i1, int i2) {
 			if (i1==i2) return 0;

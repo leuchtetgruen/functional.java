@@ -25,19 +25,19 @@ public class Test {
 	private static void testEach(String[] arr, List<String> c) {
 		System.out.println("Testing -> each");
 		
-		F.each(c, F.Utils.printer);
+		F.each(c, new F.Utils.Printer<String>());
 		System.out.println("--");
-		F.each(arr, F.Utils.printer);
+		F.each(arr, new F.Utils.Printer<String>());
 	}
 
 	
 	private static void testMap(String[] arr, List<String> c) {
 		System.out.println("Testing -> map");
-		F.Mapper m = new F.Mapper() {
+		F.Mapper<String, Integer> m = new F.Mapper<String, Integer>() {
 			
 			@Override
-			public Object map(Object o) {
-				return (Integer) ((String) o).length();
+			public Integer map(String o) {
+				return o.length();
 			}
 		};
 		
@@ -136,9 +136,9 @@ public class Test {
 	private static void testGroup(String[] arr, List<String> c) {
 		System.out.println("Testing -> group");
 		
-		F.Mapper m = new F.Mapper() {
-			public Object map(Object o) {
-				return ((String) o).subSequence(0, 1);
+		F.Mapper<String, String> m = new F.Mapper<String, String>() {
+			public String map(String o) {
+				return o.subSequence(0, 1).toString();
 			}
 		};
 		
