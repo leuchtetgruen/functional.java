@@ -383,22 +383,22 @@ public class F {
 			});
 		}
 		
-		public int intCompare(int i1, int i2) {
+		public static int intCompare(int i1, int i2) {
 			if (i1==i2) return 0;
 			return (i1 > i2) ? 1 : -1;
 		}
 		
-		public int doubleCompare(double d1, double d2) {
+		public static int doubleCompare(double d1, double d2) {
 			if (d1==d2) return 0;
 			return (d1 > d2) ? 1 : -1;
 		}
 		
-		public int longCompare(long l1, long l2) {
+		public static int longCompare(long l1, long l2) {
 			if (l1==l2) return 0;
 			return (l1 > l2) ? 1 : -1;
 		}
 		
-		public int floatCompare(float f1, float f2) {
+		public static int floatCompare(float f1, float f2) {
 			if (f1==f2) return 0;
 			return (f1 > f2) ? 1 : -1;
 		}
