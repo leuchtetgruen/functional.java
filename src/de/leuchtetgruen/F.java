@@ -390,5 +390,13 @@ public class F {
 			if (f1==f2) return 0;
 			return (f1 > f2) ? 1 : -1;
 		}
+		
+		public static Collection<Integer> indexSet(Collection<?> c) {
+			ArrayList<Integer> l = new ArrayList<Integer>();
+			for (int i=0; i< c.size(); i++) {
+				l.add(i);
+			}
+			return l;
+		}
 	}
 }
