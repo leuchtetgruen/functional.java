@@ -105,6 +105,15 @@ public class Test {
 		}
 	};
 	
+	private static de.leuchtetgruen.F.Comparator<String> FstringLengthComparator = new de.leuchtetgruen.F.Comparator<String>() {
+		public int compare(String arg0, String arg1) {
+			int i1 = ((String) arg0).length();
+			int i2 = ((String) arg1).length();
+			if (i1==i2) return 0;
+			return (i1 > i2) ? 1 : -1 ;
+		}
+	};
+	
 	private static void testSortWithoutCopy(String[] arr, List<String> c) {
 		System.out.println("Testing -> sortWithoutCopy");
 		
@@ -116,11 +125,11 @@ public class Test {
 	private static void testMinMax(String[] arr, List<String> c) {
 		System.out.println("Testing -> min / max");
 		
-		System.out.println(F.min(c, stringLengthComparator));
-		System.out.println(F.min(arr, stringLengthComparator));
+		System.out.println(F.min(c, FstringLengthComparator));
+		System.out.println(F.min(arr, FstringLengthComparator));
 		System.out.println("~");
-		System.out.println(F.max(c, stringLengthComparator));
-		System.out.println(F.max(arr, stringLengthComparator));
+		System.out.println(F.max(c, FstringLengthComparator));
+		System.out.println(F.max(arr, FstringLengthComparator));
 		
 	}
 	

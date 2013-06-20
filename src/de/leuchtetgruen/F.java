@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +40,10 @@ public class F {
 	
 	public static interface Cloneable {
 		public Object clone();
+	}
+	
+	public static interface Comparator<T> {
+		public int compare(T o1, T o2);
 	}
 	
 	
@@ -219,12 +222,12 @@ public class F {
 	}
 	
 	// SORT
-	public static <T> List<T> sortWithoutCopy(List<T> c, Comparator<Object> r) {
+	public static <T> List<T> sortWithoutCopy(List<T> c, java.util.Comparator<Object> r) {
 		Collections.sort(c, r);
 		return c;
 	}
 	
-	public static <T> T[] sortWithoutCopy(T[] arr, Comparator<Object> r) {
+	public static <T> T[] sortWithoutCopy(T[] arr, java.util.Comparator<Object> r) {
 		T[] copy = arr.clone();
 		Arrays.sort(copy, r);
 		return copy;
@@ -232,40 +235,34 @@ public class F {
 	
 	// MIN
 	@SuppressWarnings("unchecked")
-	public static <T> T min(Collection<T> c, final Comparator<Object> r) {
+	public static <T> T min(Collection<T> c, final Comparator<T> r) {
 		Object min = null;
 		return (T) reduce(c, new Reducer() {
 			public Object reduce(Object memo, Object o) {
 				if (memo == null) return o;
-				
-				Comparable<Object> co = (Comparable<Object>) o;
-				Comparable<Object> cm = (Comparable<Object>) memo;
-				int result = r.compare(co, cm); 
+				int result = r.compare((T) o, (T) memo); 
 				if (result < 0) {
-					return co;
+					return o;
 				}
 				else {
-					return cm;
+					return memo;
 				}
 			}
 		}, min);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T min(T[] arr, final Comparator<Object> r) {
+	public static <T> T min(T[] arr, final Comparator<T> r) {
 		Object min = null;
 		return (T) reduce(arr, new Reducer() {
 			public Object reduce(Object memo, Object o) {
 				if (memo == null) return o;
-				
-				Comparable<Object> co = (Comparable<Object>) o;
-				Comparable<Object> cm = (Comparable<Object>) memo;
-				int result = r.compare(co, cm); 
+				int result = r.compare((T) o, (T) memo); 
 				if (result < 0) {
-					return co;
+					return o;
 				}
 				else {
-					return cm;
+					return memo;
 				}
 			}
 		}, min);
@@ -273,40 +270,34 @@ public class F {
 	
 	// MAX
 	@SuppressWarnings("unchecked")
-	public static <T> T max(Collection<T> c, final Comparator<Object> r) {
+	public static <T> T max(Collection<T> c, final Comparator<T> r) {
 		Object max = null;
 		return (T) reduce(c, new Reducer() {
 			public Object reduce(Object memo, Object o) {
 				if (memo == null) return o;
-				
-				Comparable<Object> co = (Comparable<Object>) o;
-				Comparable<Object> cm = (Comparable<Object>) memo;
-				int result = r.compare(co, cm); 
+				int result = r.compare((T) o, (T) memo); 
 				if (result > 0) {
-					return co;
+					return o;
 				}
 				else {
-					return cm;
+					return memo;
 				}
 			}
 		}, max);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T max(T[] arr, final Comparator<Object> r) {
+	public static <T> T max(T[] arr, final Comparator<T> r) {
 		Object max = null;
 		return (T) reduce(arr, new Reducer() {
 			public Object reduce(Object memo, Object o) {
 				if (memo == null) return o;
-				
-				Comparable<Object> co = (Comparable<Object>) o;
-				Comparable<Object> cm = (Comparable<Object>) memo;
-				int result = r.compare(co, cm); 
+				int result = r.compare((T) o, (T) memo); 
 				if (result > 0) {
-					return co;
+					return o;
 				}
 				else {
-					return cm;
+					return memo;
 				}
 			}
 		}, max);
