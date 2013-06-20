@@ -60,11 +60,11 @@ public class Test {
 		System.out.println(F.reduce(arr, rTotalLength, 0));
 	}
 	
-	private static F.Decider moreThanOneWordDecider = new F.Decider() {
+	private static F.Decider<String> moreThanOneWordDecider = new F.Decider<String>() {
 		
 		@Override
-		public boolean decide(Object o) {
-			return ((String) o).contains(" ");
+		public boolean decide(String o) {
+			return o.contains(" ");
 		}
 	};
 	
