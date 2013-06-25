@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 
 /**
@@ -44,6 +45,12 @@ public class F {
 		public int compare(T o1, T o2);
 	}
 	
+	public static interface LazyListDataSource<T> {
+		public T get(int index);
+		public int size();
+		public boolean shouldCache();
+	}
+		
 	
 	// EACH
 	public static <T> void each(Iterable<T> c, Runner<T> r) {
@@ -346,6 +353,171 @@ public class F {
 	
 	//TODO - Lazy collection with caching
 	
+
+	public static class LazyList<T> implements List<T> {
+		
+		private LazyListDataSource<T> dataSource;
+		private ArrayList<T> cache;
+		private boolean shouldCache;
+		
+		public LazyList(LazyListDataSource<T> source) {
+			this.cache = new ArrayList<T>(source.size());
+			for (int i=0; i< source.size(); i++) {
+				this.cache.add(null);
+			}
+			this.dataSource = source;			
+			this.shouldCache = source.shouldCache();
+		}
+		
+		
+		public boolean add(T e) { return false; }
+		public void add(int index, T element)  {}
+		public boolean addAll(Collection<? extends T> c) { return false; }
+		public boolean addAll(int index, Collection<? extends T> c) { return false; }
+		public void clear() {}
+		public boolean contains(final Object o1) {
+			return F.isValidForAny(this, new F.Decider<T>() {
+				public boolean decide(T o2) {
+					return o1.equals(o2);
+				}
+			});
+		}
+		public boolean containsAll(Collection<?> c) {
+			return F.isValidForAll((Collection<T>) c, new F.Decider<T>() {
+				public boolean decide(T o2) {
+					return contains(o2);
+				}
+			});
+		}
+		public boolean equals(Object o) {
+			return false;
+		}
+		public T get(int index) {
+			if (shouldCache) {
+				T ret = cache.get(index);
+				if (ret==null) {
+					ret = dataSource.get(index);
+					cache.set(index, ret);
+				}
+				return ret;
+			}
+			else return dataSource.get(index);
+		}
+		
+		public int hashCode() {
+			// TODO implement
+			return -1;
+		}
+		
+		public int indexOf(Object o) {
+			for (int i=0; i < size(); i++) {
+				if (get(i).equals(o)) return i;
+			}
+			return -1;
+		}
+		
+		public boolean isEmpty() {
+			return (size() == 0);
+		}
+		
+		// ListIterator stuff
+		// TODO implement caching
+		private class LazyListIterator<T>  implements ListIterator<T> {
+			private int index;
+			
+			public void add(T e) {}
+
+			public LazyListIterator() {
+				this.index = -1;
+			}
+			
+			public LazyListIterator(int startIndex) {
+				this.index = startIndex;
+			}
+
+			public boolean hasNext() {
+				return (index < (size() - 1));
+			}
+
+			public boolean hasPrevious() {
+				return (index > 0);
+			}
+
+			public T next() {
+				index++;
+				return (T) get(index);
+			}
+
+			public int nextIndex() {
+				return (index + 1);
+			}
+
+			public T previous() {
+				index--;
+				return (T) get(index);
+			}
+
+			public int previousIndex() {
+				return (index - 1);
+			}
+
+			public void remove() {
+				// do nothing
+			}
+			
+			public void set(T e) {}
+			
+			
+		}
+		
+		
+		public Iterator<T> iterator() {
+			return new LazyListIterator();
+		}
+		
+		public int lastIndexOf(Object o) {
+			int found = -1;
+			for (int i=0; i < size(); i++) {
+				if (get(i).equals(o)) found = i;
+			}
+			return found;
+		}
+		
+		public ListIterator<T> listIterator() {
+			return new LazyListIterator();
+		}
+		
+		public ListIterator<T> listIterator(int startIndex) {
+			return new LazyListIterator(startIndex);
+		}
+		
+		public T remove(int index) { return null; }
+		public boolean remove(Object o) { return false; }		
+		public boolean removeAll(Collection<?> c) { return false; }
+		public boolean retainAll(Collection<?> c) { return false; }
+		public T set(int index, T element) { return null; }
+		
+		public int size() {
+			return dataSource.size();
+		}
+		
+		public List<T> subList(int fromIndex, int toIndex) {
+			// TODO implement lazy sublist
+			return null;
+		}
+		
+		public Object[] toArray() {
+			// TODO implement
+			return null;
+		}
+		
+		public <T> T[] toArray(T[] a) {
+			// TODO implement
+			return null;
+		}
+		
+	}
+	
 	// UTILS
 	public static class Utils {
 		
@@ -427,7 +599,7 @@ public class F {
 			return l;
 		}
 		
-		// Special Lazy sets
+		// Special Lazy sets and lists
 		public static class LazyIntegerSet extends LazyIndexedSet<Integer> {
 			private int from;
 			private int to;
@@ -436,6 +608,27 @@ public class F {
 				super(new F.Mapper<Integer, Integer>() {
 					public Integer map(Integer index) {
 						return (index > (to - from)) ? null : from + index;
+					}
+				});
+			}
+		}
+		
+		public static class LazyIntegerList extends LazyList<Integer> {
+			private int from;
+			private int to;
+
+			public LazyIntegerList(final int from, final int to) {
+				super(new F.LazyListDataSource<Integer>() {
+					public Integer get(int index) {
+						return from + index;
+					}
+					
+					public int size() {
+						return 1 + (to-from);
+					}
+					
+					public boolean shouldCache() {
+						return true;
 					}
 				});
 			}

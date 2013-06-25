@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+
 import de.leuchtetgruen.F;
 
 public class Test {
@@ -23,6 +24,28 @@ public class Test {
 		F.Utils.LazyIntegerSet s = new F.Utils.LazyIntegerSet(1, 5);
 		F.Utils.print(s);
 		
+		F.Utils.LazyIntegerList l = new F.Utils.LazyIntegerList(1,15);
+		F.Utils.print(l);
+		
+		
+		F.LazyList<Double> randomNumbers = new F.LazyList<Double>(new F.LazyListDataSource<Double>() {
+			public Double get(int index) {
+				return Math.random();
+			}
+			
+			public int size() {
+				return 15;
+			}
+			
+			public boolean shouldCache() {
+				// try setting this to true
+				return true;
+			}
+		});
+		
+		F.Utils.print(randomNumbers);
+		System.out.println("..");
+		F.Utils.print(randomNumbers);
 	}
 
 	private static void testEach(String[] arr, List<String> c) {
