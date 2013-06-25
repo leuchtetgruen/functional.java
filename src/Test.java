@@ -49,10 +49,10 @@ public class Test {
 	private static void testReduce(String[] arr, List<String> c) {
 		System.out.println("Testing -> reduce");
 		
-		F.Reducer rTotalLength = new F.Reducer() {
+		F.Reducer rTotalLength = new F.Reducer<String, Integer>() {
 			@Override
-			public Object reduce(Object memo, Object o) {
-				return (Integer) ((Integer) memo) + ((String) o).length();
+			public Integer reduce(Integer memo, String o) {
+				return memo + o.length();
 			}
 		};
 		

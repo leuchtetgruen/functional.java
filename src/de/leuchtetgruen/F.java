@@ -30,17 +30,14 @@ public class F {
 		public U map(T o);
 	}
 	
-	public static interface Reducer {
-		public Object reduce(Object memo, Object o);
+	public static interface Reducer<T,U> {
+		public U reduce(U memo, T o);
 	}
 	
 	public static interface Decider<T> {
 		public boolean decide(T o);
 	}
 	
-	public static interface Cloneable {
-		public Object clone();
-	}
 	
 	public static interface Comparator<T> {
 		public int compare(T o1, T o2);
@@ -87,15 +84,15 @@ public class F {
 	
 	
 	// REDUCE
-	public static Object reduce(Collection<?> c, Reducer r, Object memo) {
-		for (Object o : c) {
+	public static <T,U> U reduce(Collection<T> c, Reducer<T,U> r, U memo) {
+		for (T o : c) {
 			memo = r.reduce(memo, o);
 		}
 		return memo;
 	}
 	
-	public static Object reduce(Object[] arr, Reducer r, Object memo) {
-		for (Object o : arr) {
+	public static <T,U> U reduce(T[] arr, Reducer<T,U> r, U memo) {
+		for (T o : arr) {
 			memo = r.reduce(memo, o);
 		}
 		return memo;
@@ -110,7 +107,7 @@ public class F {
 		return ret;
 	}
 	
-	public static <T> Object[] filter(T[] arr, Decider<T> r) {
+	public static <T> T[] filter(T[] arr, Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: arr) {
 			if (r.decide(o)) ret.add(o);
@@ -144,7 +141,7 @@ public class F {
 		return ret;
 	}
 	
-	public static <T> Object[] reject(T[] arr, Decider<T> r) {
+	public static <T> T[] reject(T[] arr, Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: arr) {
 			if (!r.decide(o)) ret.add(o);
@@ -220,11 +217,11 @@ public class F {
 	// MIN
 	@SuppressWarnings("unchecked")
 	public static <T> T min(Collection<T> c, final Comparator<T> r) {
-		Object min = null;
-		return (T) reduce(c, new Reducer() {
-			public Object reduce(Object memo, Object o) {
+		T min = null;
+		return reduce(c, new Reducer<T,T>() {
+			public T reduce(T memo, T o) {
 				if (memo == null) return o;
-				int result = r.compare((T) o, (T) memo); 
+				int result = r.compare(o, memo); 
 				if (result < 0) {
 					return o;
 				}
@@ -237,11 +234,11 @@ public class F {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T min(T[] arr, final Comparator<T> r) {
-		Object min = null;
-		return (T) reduce(arr, new Reducer() {
-			public Object reduce(Object memo, Object o) {
+		T min = null;
+		return reduce(arr, new Reducer<T,T>() {
+			public T reduce(T memo, T o) {
 				if (memo == null) return o;
-				int result = r.compare((T) o, (T) memo); 
+				int result = r.compare(o, memo); 
 				if (result < 0) {
 					return o;
 				}
@@ -255,11 +252,11 @@ public class F {
 	// MAX
 	@SuppressWarnings("unchecked")
 	public static <T> T max(Collection<T> c, final Comparator<T> r) {
-		Object max = null;
-		return (T) reduce(c, new Reducer() {
-			public Object reduce(Object memo, Object o) {
+		T max = null;
+		return reduce(c, new Reducer<T,T>() {
+			public T reduce(T memo, T o) {
 				if (memo == null) return o;
-				int result = r.compare((T) o, (T) memo); 
+				int result = r.compare(o, memo); 
 				if (result > 0) {
 					return o;
 				}
@@ -272,11 +269,11 @@ public class F {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T max(T[] arr, final Comparator<T> r) {
-		Object max = null;
-		return (T) reduce(arr, new Reducer() {
-			public Object reduce(Object memo, Object o) {
+		T max = null;
+		return reduce(arr, new Reducer<T,T>() {
+			public T reduce(T memo, T o) {
 				if (memo == null) return o;
-				int result = r.compare((T) o, (T) memo); 
+				int result = r.compare(o, memo); 
 				if (result > 0) {
 					return o;
 				}
