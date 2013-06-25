@@ -316,6 +316,34 @@ public class F {
 		return ret;
 	}
 	
+	// LAZY SETS
+	public static class LazyIndexedSet<T> implements Iterable<T>, Iterator<T> {
+		private Mapper<Integer, T> mapper;
+		private Integer index;
+		
+		public LazyIndexedSet(Mapper<Integer, T> mapper) {
+			this.mapper = mapper;
+			this.index 	= -1;
+		}
+		
+		public boolean hasNext() {
+			return (mapper.map(index + 1) != null);
+		}
+		
+		public T next() {
+			index++;
+			return mapper.map(index);
+		}
+		
+		public void remove() {
+			// do nothing
+		}
+		
+		public Iterator<T> iterator() {
+			return this;
+		}
+	}
+	
 	// UTILS
 	public static class Utils {
 		
@@ -397,33 +425,17 @@ public class F {
 			return l;
 		}
 		
-		// Lazy sets
-		public static class LazyIntegerSet implements Iterable<Integer>, Iterator<Integer> {
+		// Special Lazy sets
+		public static class LazyIntegerSet extends LazyIndexedSet<Integer> {
 			private int from;
 			private int to;
-			private int current;
 
-			public LazyIntegerSet(int from, int to) {
-				this.from = from;
-				this.to = to;
-				this.current = from - 1;
-			}
-
-			public boolean hasNext() {
-				return (current < to);
-			}
-
-			public Integer next() {
-				current++;
-				return current;
-			}
-
-			public Iterator<Integer> iterator() {
-				return this;
-			}
-
-			public void remove() {
-				// does nothing
+			public LazyIntegerSet(final int from, final int to) {
+				super(new F.Mapper<Integer, Integer>() {
+					public Integer map(Integer index) {
+						return (index > (to - from)) ? null : from + index;
+					}
+				});
 			}
 		}
 		

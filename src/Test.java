@@ -20,6 +20,9 @@ public class Test {
 		testMinMax(arr, c);
 		testGroup(arr, c);
 		
+		F.Utils.LazyIntegerSet s = new F.Utils.LazyIntegerSet(1, 5);
+		F.Utils.print(s);
+		
 	}
 
 	private static void testEach(String[] arr, List<String> c) {
