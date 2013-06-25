@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Iterator;
 
 
 /**
@@ -395,5 +396,36 @@ public class F {
 			}
 			return l;
 		}
+		
+		// Lazy sets
+		public static class LazyIntegerSet implements Iterable<Integer>, Iterator<Integer> {
+			private int from;
+			private int to;
+			private int current;
+
+			public LazyIntegerSet(int from, int to) {
+				this.from = from;
+				this.to = to;
+				this.current = from - 1;
+			}
+
+			public boolean hasNext() {
+				return (current < to);
+			}
+
+			public Integer next() {
+				current++;
+				return current;
+			}
+
+			public Iterator<Integer> iterator() {
+				return this;
+			}
+
+			public void remove() {
+				// does nothing
+			}
+		}
+		
 	}
 }
