@@ -46,7 +46,7 @@ public class F {
 	
 	
 	// EACH
-	public static <T> void each(Collection<T> c, Runner<T> r) {
+	public static <T> void each(Iterable<T> c, Runner<T> r) {
 		for (T o : c) {
 			r.run(o);
 		}
@@ -66,7 +66,7 @@ public class F {
 	}
 	
 	// MAP
-	public static <T,U> List<U> map(Collection<T> c, Mapper<T,U> r) {
+	public static <T,U> List<U> map(Iterable<T> c, Mapper<T,U> r) {
 		ArrayList<U> ret = new ArrayList<U>();
 		for (T o : c) {
 			ret.add(r.map(o));
@@ -85,7 +85,7 @@ public class F {
 	
 	
 	// REDUCE
-	public static <T,U> U reduce(Collection<T> c, Reducer<T,U> r, U memo) {
+	public static <T,U> U reduce(Iterable<T> c, Reducer<T,U> r, U memo) {
 		for (T o : c) {
 			memo = r.reduce(memo, o);
 		}
@@ -100,7 +100,7 @@ public class F {
 	}
 	
 	// FILTER
-	public static <T> List<T> filter(Collection<T> c,Decider<T> r) {
+	public static <T> List<T> filter(Iterable<T> c,Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: c) {
 			if (r.decide(o)) ret.add(o);
@@ -119,7 +119,7 @@ public class F {
 	}
 	
 	// FIND
-	public static <T> T find(Collection<T> c, Decider<T> r) {
+	public static <T> T find(Iterable<T> c, Decider<T> r) {
 		for (T o: c) {
 			if (r.decide(o)) return o;
 		}
@@ -134,7 +134,7 @@ public class F {
 	}
 	
 	// REJECT
-	public static <T> List<T> reject(Collection<T> c,Decider<T> r) {
+	public static <T> List<T> reject(Iterable<T> c,Decider<T> r) {
 		ArrayList<T> ret = new ArrayList<T>();
 		for (T o: c) {
 			if (!r.decide(o)) ret.add(o);
@@ -153,7 +153,7 @@ public class F {
 	}
 	
 	// ISVALIDFORALL
-	public static <T> boolean isValidForAll(Collection<T> c, Decider<T> r) {
+	public static <T> boolean isValidForAll(Iterable<T> c, Decider<T> r) {
 		boolean all = true;
 		for (T o: c) {
 			all = all && r.decide(o);
@@ -170,7 +170,7 @@ public class F {
 	}
 	
 	// ISVALIDFORANY
-	public static <T> boolean isValidForAny(Collection<T> c, Decider<T> r) {
+	public static <T> boolean isValidForAny(Iterable<T> c, Decider<T> r) {
 		boolean all = false;
 		for (T o: c) {
 			all = all || r.decide(o);
@@ -187,7 +187,7 @@ public class F {
 	}
 	
 	// COUNTVALIDENTRIES
-	public static <T> int countValidEntries(Collection<T> c, Decider<T> r) {
+	public static <T> int countValidEntries(Iterable<T> c, Decider<T> r) {
 		int count = 0;
 		for (T o : c) {
 			if (r.decide(o)) count++;
@@ -217,7 +217,7 @@ public class F {
 	
 	// MIN
 	@SuppressWarnings("unchecked")
-	public static <T> T min(Collection<T> c, final Comparator<T> r) {
+	public static <T> T min(Iterable<T> c, final Comparator<T> r) {
 		T min = null;
 		return reduce(c, new Reducer<T,T>() {
 			public T reduce(T memo, T o) {
@@ -252,7 +252,7 @@ public class F {
 	
 	// MAX
 	@SuppressWarnings("unchecked")
-	public static <T> T max(Collection<T> c, final Comparator<T> r) {
+	public static <T> T max(Iterable<T> c, final Comparator<T> r) {
 		T max = null;
 		return reduce(c, new Reducer<T,T>() {
 			public T reduce(T memo, T o) {
@@ -286,7 +286,7 @@ public class F {
 	}
 	
 	// GROUP
-	public static <T, U> HashMap<U, List<T>> group(Collection<T> c, Mapper<T,U> r) {
+	public static <T, U> HashMap<U, List<T>> group(Iterable<T> c, Mapper<T,U> r) {
 		HashMap<U, List<T>> ret = new HashMap<U, List<T>>();
 		for (T o: c) {
 			U mapped = r.map(o);
@@ -325,7 +325,7 @@ public class F {
 			}
 		}
 		
-		public static <T> void print(Collection<T> c) {
+		public static <T> void print(Iterable<T> c) {
 			each(c, new Printer<T>());
 		}
 		
