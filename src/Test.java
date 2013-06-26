@@ -49,7 +49,7 @@ public class Test {
 			}
 			
 			public int size() {
-				return 10;
+				return 100;
 			}
 			
 			public boolean shouldCache() {
@@ -57,8 +57,10 @@ public class Test {
 			}
 		});
 		
-		System.out.println("Fibonacci list");
-		F.Utils.print(fibonacciList);
+		System.out.println("Fibonacci list from 2 to 10");
+		F.LazyList<Long> fibonacciSublist = (F.LazyList<Long>) fibonacciList.subList(2,10); // still lazy
+		Long[] fibonacciArr = fibonacciSublist.toArray(new Long[fibonacciSublist.size()]); // toArray makes it become non lazy
+		F.Utils.print(fibonacciArr);
 	}
 
 	private static void testEach(String[] arr, List<String> c) {

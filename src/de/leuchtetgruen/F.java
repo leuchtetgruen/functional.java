@@ -358,12 +358,14 @@ public class F {
 		private boolean shouldCache;
 		
 		public LazyList(LazyListDataSource<T> source) {
-			this.cache = new ArrayList<T>(source.size());
-			for (int i=0; i< source.size(); i++) {
-				this.cache.add(null);
+			this.shouldCache = source.shouldCache();
+			if (shouldCache) {
+				this.cache = new ArrayList<T>(source.size());
+				for (int i=0; i< source.size(); i++) {
+					this.cache.add(null);
+				}
 			}
 			this.dataSource = source;			
-			this.shouldCache = source.shouldCache();
 		}
 		
 		
@@ -499,18 +501,39 @@ public class F {
 		}
 		
 		public List<T> subList(int fromIndex, int toIndex) {
-			// TODO implement lazy sublist
-			return null;
+			final int from = fromIndex;
+			final int to = toIndex;
+			final LazyList<T> _this = this;
+			// TODO Check indices and throw exceptions
+			return new LazyList<T>(new LazyListDataSource<T>() {
+				public T get(int i, LazyList<T> ll) {
+					return _this.get(from + i);
+				}
+
+				public int size() {
+					return (to - from);
+				}
+
+				public boolean shouldCache() {
+					return shouldCache;
+				}
+			});
+		}
+		
+		public List<T> toNonLazyList() {
+				ArrayList<T> ret = new ArrayList<T>();
+				for (T e: this) {
+					ret.add(e);
+				}
+				return ret;
 		}
 		
 		public Object[] toArray() {
-			// TODO implement
-			return null;
+			return toNonLazyList().toArray();
 		}
 		
 		public <T> T[] toArray(T[] a) {
-			// TODO implement
-			return null;
+			return toNonLazyList().toArray(a);
 		}
 		
 	}
