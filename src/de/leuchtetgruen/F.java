@@ -777,5 +777,19 @@ public class F {
 			}
 		}
 		
+		public static long measureExecutionTime(Runnable r) {
+			long before = System.currentTimeMillis();
+			r.run();
+			long after = System.currentTimeMillis();
+			return (after - before);
+		}
+		
+		public static void benchmark(Runnable r) {
+			System.out.println("Running...");
+			long time = measureExecutionTime(r);
+			System.out.println("Done.");
+			System.out.println("Execution time: " + time + "ms");
+		}
+		
 	}
 }
