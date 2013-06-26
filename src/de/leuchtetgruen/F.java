@@ -46,7 +46,7 @@ public class F {
 	}
 	
 	public static interface LazyListDataSource<T> {
-		public T get(int index);
+		public T get(int index, LazyList<T> ll);
 		public int size();
 		public boolean shouldCache();
 	}
@@ -396,12 +396,12 @@ public class F {
 			if (shouldCache) {
 				T ret = cache.get(index);
 				if (ret==null) {
-					ret = dataSource.get(index);
+					ret = dataSource.get(index, this);
 					cache.set(index, ret);
 				}
 				return ret;
 			}
-			else return dataSource.get(index);
+			else return dataSource.get(index, this);
 		}
 		
 		public int hashCode() {
@@ -619,7 +619,7 @@ public class F {
 
 			public LazyIntegerList(final int from, final int to) {
 				super(new F.LazyListDataSource<Integer>() {
-					public Integer get(int index) {
+					public Integer get(int index, F.LazyList ll) {
 						return from + index;
 					}
 					

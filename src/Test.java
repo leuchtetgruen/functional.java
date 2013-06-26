@@ -29,7 +29,7 @@ public class Test {
 		
 		
 		F.LazyList<Double> randomNumbers = new F.LazyList<Double>(new F.LazyListDataSource<Double>() {
-			public Double get(int index) {
+			public Double get(int index, F.LazyList ll) {
 				return Math.random();
 			}
 			
@@ -46,6 +46,27 @@ public class Test {
 		F.Utils.print(randomNumbers);
 		System.out.println("..");
 		F.Utils.print(randomNumbers);
+		
+		F.LazyList<Long> fibonacciList = new F.LazyList<Long>(new F.LazyListDataSource<Long>() {
+			public Long get(int i, F.LazyList<Long> ll) {
+				if (i >= 2) {
+					return ll.get(i-1) + ll.get(i-2);
+				}
+				else {
+					return (long) i;
+				}
+			}
+			
+			public int size() {
+				return 10;
+			}
+			
+			public boolean shouldCache() {
+				return true;
+			}
+		});
+		
+		F.Utils.print(fibonacciList);
 	}
 
 	private static void testEach(String[] arr, List<String> c) {
