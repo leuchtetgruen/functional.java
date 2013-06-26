@@ -23,29 +23,20 @@ public class Test {
 		
 		F.Utils.LazyIntegerSet s = new F.Utils.LazyIntegerSet(1, 5);
 		F.Utils.print(s);
+		System.out.println("..");
 		
 		F.Utils.LazyIntegerList l = new F.Utils.LazyIntegerList(1,15);
 		F.Utils.print(l);
+		System.out.println("..");
 		
-		
-		F.LazyList<Double> randomNumbers = new F.LazyList<Double>(new F.LazyListDataSource<Double>() {
-			public Double get(int index, F.LazyList ll) {
-				return Math.random();
-			}
-			
-			public int size() {
-				return 15;
-			}
-			
-			public boolean shouldCache() {
-				// try setting this to true
-				return true;
+		F.LazyList<Integer> lDouble = F.lazyMap(l, new F.Mapper<Integer, Integer>() {
+			public Integer map(Integer v) {
+				return 2*v;
 			}
 		});
 		
-		F.Utils.print(randomNumbers);
+		F.Utils.print(lDouble);
 		System.out.println("..");
-		F.Utils.print(randomNumbers);
 		
 		F.LazyList<Long> fibonacciList = new F.LazyList<Long>(new F.LazyListDataSource<Long>() {
 			public Long get(int i, F.LazyList<Long> ll) {
@@ -66,6 +57,7 @@ public class Test {
 			}
 		});
 		
+		System.out.println("Fibonacci list");
 		F.Utils.print(fibonacciList);
 	}
 

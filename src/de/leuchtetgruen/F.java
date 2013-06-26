@@ -351,9 +351,6 @@ public class F {
 		}
 	}
 	
-	//TODO - Lazy collection with caching
-	
-
 	public static class LazyList<T> implements List<T> {
 		
 		private LazyListDataSource<T> dataSource;
@@ -516,6 +513,22 @@ public class F {
 			return null;
 		}
 		
+	}
+	
+	public static <T,U> LazyList<U> lazyMap(final List<T> c, final Mapper<T,U> mapper) {
+		return new LazyList<U>(new LazyListDataSource<U>() {
+			public U get(int i, F.LazyList ll) {
+				return mapper.map(c.get(i));
+			}
+			
+			public int size() {
+				return c.size();
+			}
+			
+			public boolean shouldCache() {
+				return true;
+			}			
+		});
 	}
 	
 	// UTILS
