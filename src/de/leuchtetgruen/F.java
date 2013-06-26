@@ -10,6 +10,13 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author Hannes Walz<info@leuchtetgruen.de>
@@ -322,6 +329,106 @@ public class F {
 		
 		return ret;
 	}
+	
+	// CONCURRENCY
+	public static Concurrency DefaultConcurrency = new Concurrency(Executors.newCachedThreadPool(), 2000);
+	
+	public static class Concurrency {
+		private ExecutorService ex;
+		private int timeout;
+		
+		
+		public Concurrency(ExecutorService ex, int timeout) {
+			this.ex = ex;
+			this.timeout = timeout;
+		}
+		
+		private void finishService() {
+			ex.shutdown();
+			try {
+				ex.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO do stuff
+			}
+		}
+		
+		public <T> void each(final Iterable<T> c, final Runner<T> r) {
+			for (final T o : c) {
+				ex.submit(new Runnable() {
+					public void run() {
+						r.run(o);
+					}
+				});
+			}
+			finishService();
+		}
+		
+		public <T,U> List<U> map(final Iterable<T> c, final Mapper<T,U> m) throws InterruptedException, ExecutionException {
+			ArrayList<Future<U>> futures = new ArrayList<Future<U>>();
+			
+			// Step 1 - create threads
+			for (final T o : c) {
+				futures.add(ex.submit(new Callable<U>() {
+					public U call() {
+						return m.map(o);
+					}
+				}));
+			}
+			
+			// Step 2 - collect futures
+			ArrayList<U> ret = new ArrayList<U>();
+			for (Future<U> f : futures) {
+				ret.add(f.get());
+			}
+			finishService();
+			return ret;
+		}
+		
+		public <T> List<T> filter(final List<T> c, final Decider<T> d) throws InterruptedException, ExecutionException {
+			ArrayList<Future<Boolean>> futures = new ArrayList<Future<Boolean>>();
+
+			// Step 1 - create threads
+			for (final T o : c) {
+				futures.add(ex.submit(new Callable<Boolean>() {
+					public Boolean call() {
+						return d.decide(o);
+					}
+				}));
+			}
+			
+			// Step 2 - collect futures
+			ArrayList<T> ret = new ArrayList<T>();
+			for (int i=0; i < c.size(); i++) {
+				if (futures.get(i).get()) ret.add(c.get(i));
+			}
+			finishService();
+			return ret;
+		}
+		
+		public <T> List<T> reject(final List<T> c, final Decider<T> d) throws InterruptedException, ExecutionException {
+			ArrayList<Future<Boolean>> futures = new ArrayList<Future<Boolean>>();
+
+			// Step 1 - create threads
+			for (final T o : c) {
+				futures.add(ex.submit(new Callable<Boolean>() {
+					public Boolean call() {
+						return d.decide(o);
+					}
+				}));
+			}
+			
+			// Step 2 - collect futures
+			ArrayList<T> ret = new ArrayList<T>();
+			for (int i=0; i < c.size(); i++) {
+				if (!futures.get(i).get()) ret.add(c.get(i));
+			}
+			finishService();
+			return ret;
+		}
+	}
+	
+
+	
 	
 	// LAZY SETS
 	public static class LazyIndexedSet<T> implements Iterable<T>, Iterator<T> {
