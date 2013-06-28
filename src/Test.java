@@ -1,14 +1,14 @@
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
+import java.util.concurrent.Executors;
 
 import de.leuchtetgruen.F;
 
 public class Test {
 	
 
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		String[] arr = { "New York", "Rio", "Tokyo", "New Mexico" };
 		List<String> c = Arrays.asList(arr);
 
@@ -20,24 +20,45 @@ public class Test {
 		testSortWithoutCopy(arr, c);
 		testMinMax(arr, c);
 		testGroup(arr, c);
+		testLazyEvaluation();
 		
-		F.Utils.LazyIntegerSet s = new F.Utils.LazyIntegerSet(1, 5);
-		F.Utils.print(s);
-		System.out.println("..");
-		
-		F.Utils.LazyIntegerList l = new F.Utils.LazyIntegerList(1,15);
-		F.Utils.print(l);
-		System.out.println("..");
-		
-		F.LazyList<Integer> lDouble = F.lazyMap(l, new F.Mapper<Integer, Integer>() {
-			public Integer map(Integer v) {
-				return 2*v;
+		testConcurrency();
+	}
+	
+	public static void testConcurrency() {
+		final F.LazyList<Integer> l = new F.Utils.LazyIntegerList(1, 500000);
+		final F.Decider<Integer> primeDecider = new F.Decider<Integer>() {
+																					public boolean decide(Integer i) {
+																						for (int j=2; j < (i/2); j++) {
+																							if ((i%j)==0) return false;
+																						}
+																						return true;
+																					}
+																				};
+																				
+
+		System.out.println("Finding primes between 1 and 500000 without concurrency...");
+		F.Utils.benchmark(new Runnable() {
+			public void run() {
+				List<Integer> primes = F.filter(l, primeDecider);
 			}
 		});
 		
-		F.Utils.print(lDouble);
-		System.out.println("..");
-		
+		System.out.println("Finding primes between 1 and 500000 with concurrency...");		
+		F.Utils.benchmark(new Runnable() {
+			public void run() {
+				try {
+						List<Integer> primes = F.FixedThreadConcurrency.filter(l, primeDecider);
+				} catch (Exception e) {
+					System.err.println("Oh noes something went wrong");
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	
+	public static void testLazyEvaluation() {
 		F.LazyList<Long> fibonacciList = new F.LazyList<Long>(new F.LazyListDataSource<Long>() {
 			public Long get(int i, F.LazyList<Long> ll) {
 				if (i >= 2) {
@@ -49,7 +70,7 @@ public class Test {
 			}
 			
 			public int size() {
-				return 100;
+				return 50;
 			}
 			
 			public boolean shouldCache() {
@@ -57,6 +78,8 @@ public class Test {
 			}
 		});
 		
+		F.Utils.print(fibonacciList);
+				
 		System.out.println("Fibonacci list from 2 to 10");
 		F.LazyList<Long> fibonacciSublist = (F.LazyList<Long>) fibonacciList.subList(2,10); // still lazy
 		Long[] fibonacciArr = fibonacciSublist.toArray(new Long[fibonacciSublist.size()]); // toArray makes it become non lazy

@@ -331,7 +331,8 @@ public class F {
 	}
 	
 	// CONCURRENCY
-	public static Concurrency DefaultConcurrency = new Concurrency(Executors.newCachedThreadPool(), 2000);
+	public static Concurrency FixedThreadConcurrency = new F.Concurrency(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()), 2000);
+	public static Concurrency CachedThreadConcurrency = new Concurrency(Executors.newCachedThreadPool(), 2000);
 	
 	public static class Concurrency {
 		private ExecutorService ex;
