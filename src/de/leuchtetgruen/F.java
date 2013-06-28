@@ -57,7 +57,7 @@ public class F {
 		public int size();
 		public boolean shouldCache();
 	}
-		
+	
 	
 	// EACH
 	public static <T> void each(Iterable<T> c, Runner<T> r) {
@@ -330,107 +330,6 @@ public class F {
 		return ret;
 	}
 	
-	// CONCURRENCY
-	public static Concurrency FixedThreadConcurrency = new F.Concurrency(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()), 2000);
-	public static Concurrency CachedThreadConcurrency = new Concurrency(Executors.newCachedThreadPool(), 2000);
-	
-	public static class Concurrency {
-		private ExecutorService ex;
-		private int timeout;
-		
-		
-		public Concurrency(ExecutorService ex, int timeout) {
-			this.ex = ex;
-			this.timeout = timeout;
-		}
-		
-		private void finishService() {
-			ex.shutdown();
-			try {
-				ex.awaitTermination(timeout, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				// TODO do stuff
-			}
-		}
-		
-		public <T> void each(final Iterable<T> c, final Runner<T> r) {
-			for (final T o : c) {
-				ex.submit(new Runnable() {
-					public void run() {
-						r.run(o);
-					}
-				});
-			}
-			finishService();
-		}
-		
-		public <T,U> List<U> map(final Iterable<T> c, final Mapper<T,U> m) throws InterruptedException, ExecutionException {
-			ArrayList<Future<U>> futures = new ArrayList<Future<U>>();
-			
-			// Step 1 - create threads
-			for (final T o : c) {
-				futures.add(ex.submit(new Callable<U>() {
-					public U call() {
-						return m.map(o);
-					}
-				}));
-			}
-			
-			// Step 2 - collect futures
-			ArrayList<U> ret = new ArrayList<U>();
-			for (Future<U> f : futures) {
-				ret.add(f.get());
-			}
-			finishService();
-			return ret;
-		}
-		
-		public <T> List<T> filter(final List<T> c, final Decider<T> d) throws InterruptedException, ExecutionException {
-			ArrayList<Future<Boolean>> futures = new ArrayList<Future<Boolean>>();
-
-			// Step 1 - create threads
-			for (final T o : c) {
-				futures.add(ex.submit(new Callable<Boolean>() {
-					public Boolean call() {
-						return d.decide(o);
-					}
-				}));
-			}
-			
-			// Step 2 - collect futures
-			ArrayList<T> ret = new ArrayList<T>();
-			for (int i=0; i < c.size(); i++) {
-				if (futures.get(i).get()) ret.add(c.get(i));
-			}
-			finishService();
-			return ret;
-		}
-		
-		public <T> List<T> reject(final List<T> c, final Decider<T> d) throws InterruptedException, ExecutionException {
-			ArrayList<Future<Boolean>> futures = new ArrayList<Future<Boolean>>();
-
-			// Step 1 - create threads
-			for (final T o : c) {
-				futures.add(ex.submit(new Callable<Boolean>() {
-					public Boolean call() {
-						return d.decide(o);
-					}
-				}));
-			}
-			
-			// Step 2 - collect futures
-			ArrayList<T> ret = new ArrayList<T>();
-			for (int i=0; i < c.size(); i++) {
-				if (!futures.get(i).get()) ret.add(c.get(i));
-			}
-			finishService();
-			return ret;
-		}
-	}
-	
-
-	
-	
 	// LAZY SETS
 	public static class LazyIndexedSet<T> implements Iterable<T>, Iterator<T> {
 		private Mapper<Integer, T> mapper;
@@ -458,6 +357,7 @@ public class F {
 			return this;
 		}
 	}
+	
 	
 	public static class LazyList<T> implements List<T> {
 		
@@ -528,7 +428,6 @@ public class F {
 		}
 		
 		// ListIterator stuff
-		// TODO implement caching
 		private class LazyListIterator<T>  implements ListIterator<T> {
 			private int index;
 			
@@ -661,6 +560,137 @@ public class F {
 			}			
 		});
 	}
+	
+	// CONCURRENCY
+	public static Concurrency FixedThreadConcurrency = new F.Concurrency(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()), 2000);
+	public static Concurrency CachedThreadConcurrency = new Concurrency(Executors.newCachedThreadPool(), 2000);
+	
+	public static class Concurrency {
+		private ExecutorService ex;
+		private int timeout;
+		
+		
+		public Concurrency(ExecutorService ex, int timeout) {
+			this.ex = ex;
+			this.timeout = timeout;
+		}
+		
+		public void finishService() {
+			ex.shutdown();
+			try {
+				ex.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				// TODO do stuff
+			}
+		}
+		
+		public <T> void each(final Iterable<T> c, final Runner<T> r) {
+			for (final T o : c) {
+				ex.submit(new Runnable() {
+					public void run() {
+						r.run(o);
+					}
+				});
+			}
+			finishService();
+		}
+		
+		public <T,U> List<U> map(final Iterable<T> c, final Mapper<T,U> m) throws InterruptedException, ExecutionException {
+			ArrayList<Future<U>> futures = new ArrayList<Future<U>>();
+			
+			// Step 1 - create threads
+			for (final T o : c) {
+				futures.add(ex.submit(new Callable<U>() {
+					public U call() {
+						return m.map(o);
+					}
+				}));
+			}
+			
+			// Step 2 - collect futures
+			ArrayList<U> ret = new ArrayList<U>();
+			for (Future<U> f : futures) {
+				ret.add(f.get());
+			}
+			finishService();
+			return ret;
+		}
+		
+		public <T> List<T> filter(final List<T> c, final Decider<T> d) throws InterruptedException, ExecutionException {
+			ArrayList<Future<Boolean>> futures = new ArrayList<Future<Boolean>>();
+
+			// Step 1 - create threads
+			for (final T o : c) {
+				futures.add(ex.submit(new Callable<Boolean>() {
+					public Boolean call() {
+						return d.decide(o);
+					}
+				}));
+			}
+			
+			// Step 2 - collect futures
+			ArrayList<T> ret = new ArrayList<T>();
+			for (int i=0; i < c.size(); i++) {
+				if (futures.get(i).get()) ret.add(c.get(i));
+			}
+			finishService();
+			return ret;
+		}
+		
+		public <T> List<T> reject(final List<T> c, final Decider<T> d) throws InterruptedException, ExecutionException {
+			ArrayList<Future<Boolean>> futures = new ArrayList<Future<Boolean>>();
+
+			// Step 1 - create threads
+			for (final T o : c) {
+				futures.add(ex.submit(new Callable<Boolean>() {
+					public Boolean call() {
+						return d.decide(o);
+					}
+				}));
+			}
+			
+			// Step 2 - collect futures
+			ArrayList<T> ret = new ArrayList<T>();
+			for (int i=0; i < c.size(); i++) {
+				if (!futures.get(i).get()) ret.add(c.get(i));
+			}
+			finishService();
+			return ret;
+		}
+		
+		public <T> F.LazyListDataSource<Future<T>> getLazyListDataSource(final LazyListDataSource<T> dataSource) {
+			return new LazyListDataSource<Future<T>>() {
+				public Future<T> get(final int index, final F.LazyList<Future<T>> ll) {
+					Callable<T> c = new Callable<T>() {
+						public T call() {
+							// AS WE ONLY HAVE A LAZY LIST OF FUTURES, WE CANNOT HAND OVER AN APPROPRIATE LAZY LIST - THEREFORE RECURSIVE CALLS ARE NOT ALLOWED HERE
+							return dataSource.get(index, null);
+						}
+					};
+					return ex.submit(c);
+				}
+
+				public int size() {
+					return dataSource.size();
+				}
+
+				public boolean shouldCache() {
+					return dataSource.shouldCache();
+				}
+			};
+		}
+		
+		// After using this lazy list remember to call Concurrency.finishService();
+		public <T> F.LazyList<Future<T>> getLazyList(final LazyListDataSource<T> dataSource) {
+			return new F.LazyList<Future<T>>(getLazyListDataSource(dataSource));
+		}
+		
+	}
+	
+
+	
+	
+
 	
 	// UTILS
 	public static class Utils {

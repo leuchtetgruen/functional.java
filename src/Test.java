@@ -2,13 +2,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import de.leuchtetgruen.F;
 
 public class Test {
 	
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception {
 		String[] arr = { "New York", "Rio", "Tokyo", "New Mexico" };
 		List<String> c = Arrays.asList(arr);
 
@@ -21,9 +22,33 @@ public class Test {
 		testMinMax(arr, c);
 		testGroup(arr, c);
 		testLazyEvaluation();
+		// TODO - Concurrency for Lazy Datastructures
 		
-		testConcurrency();
+		//testConcurrency();
+		
+		System.out.println("..");
+		F.LazyList<Future<Integer>> ll = F.FixedThreadConcurrency.getLazyList(new F.LazyListDataSource<Integer>() {
+			public Integer get(int i, F.LazyList<Integer> l)  {
+				return i;
+			}
+			
+			public int size() {
+				return 5;
+			}
+			
+			public boolean shouldCache() {
+				return true;
+			}
+		});
+		
+		for (Future<Integer> fi : ll) {
+			System.out.println(fi.get());
+		}
+		
+		F.FixedThreadConcurrency.finishService();
 	}
+	
+
 	
 	public static void testConcurrency() {
 		final F.LazyList<Integer> l = new F.Utils.LazyIntegerList(1, 500000);
