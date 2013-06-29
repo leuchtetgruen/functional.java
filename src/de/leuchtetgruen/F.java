@@ -230,7 +230,6 @@ public class F {
 	}
 	
 	// MIN
-	@SuppressWarnings("unchecked")
 	public static <T> T min(Iterable<T> c, final Comparator<T> r) {
 		T min = null;
 		return reduce(c, new Reducer<T,T>() {
@@ -247,7 +246,7 @@ public class F {
 		}, min);
 	}
 	
-	@SuppressWarnings("unchecked")
+
 	public static <T> T min(T[] arr, final Comparator<T> r) {
 		T min = null;
 		return reduce(arr, new Reducer<T,T>() {
@@ -265,7 +264,6 @@ public class F {
 	}
 	
 	// MAX
-	@SuppressWarnings("unchecked")
 	public static <T> T max(Iterable<T> c, final Comparator<T> r) {
 		T max = null;
 		return reduce(c, new Reducer<T,T>() {
@@ -282,7 +280,6 @@ public class F {
 		}, max);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static <T> T max(T[] arr, final Comparator<T> r) {
 		T max = null;
 		return reduce(arr, new Reducer<T,T>() {
@@ -389,6 +386,7 @@ public class F {
 				}
 			});
 		}
+		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
 			return F.isValidForAll((Collection<T>) c, new F.Decider<T>() {
 				public boolean decide(T o2) {
@@ -428,6 +426,7 @@ public class F {
 		}
 		
 		// ListIterator stuff
+		@SuppressWarnings("hiding")
 		private class LazyListIterator<T>  implements ListIterator<T> {
 			private int index;
 			
@@ -449,6 +448,7 @@ public class F {
 				return (index > 0);
 			}
 
+			@SuppressWarnings("unchecked")
 			public T next() {
 				index++;
 				return (T) get(index);
@@ -458,6 +458,7 @@ public class F {
 				return (index + 1);
 			}
 
+			@SuppressWarnings("unchecked")
 			public T previous() {
 				index--;
 				return (T) get(index);
@@ -478,7 +479,7 @@ public class F {
 		
 		
 		public Iterator<T> iterator() {
-			return new LazyListIterator();
+			return new LazyListIterator<T>();
 		}
 		
 		public int lastIndexOf(Object o) {
@@ -490,11 +491,11 @@ public class F {
 		}
 		
 		public ListIterator<T> listIterator() {
-			return new LazyListIterator();
+			return new LazyListIterator<T>();
 		}
 		
 		public ListIterator<T> listIterator(int startIndex) {
-			return new LazyListIterator(startIndex);
+			return new LazyListIterator<T>(startIndex);
 		}
 		
 		public T remove(int index) { return null; }
@@ -539,6 +540,7 @@ public class F {
 			return toNonLazyList().toArray();
 		}
 		
+		@SuppressWarnings("hiding")
 		public <T> T[] toArray(T[] a) {
 			return toNonLazyList().toArray(a);
 		}
@@ -547,7 +549,7 @@ public class F {
 	
 	public static <T,U> LazyList<U> lazyMap(final List<T> c, final Mapper<T,U> mapper) {
 		return new LazyList<U>(new LazyListDataSource<U>() {
-			public U get(int i, F.LazyList ll) {
+			public U get(int i, @SuppressWarnings("rawtypes") F.LazyList ll) {
 				return mapper.map(c.get(i));
 			}
 			
@@ -775,9 +777,6 @@ public class F {
 		
 		// Special Lazy sets and lists
 		public static class LazyIntegerSet extends LazyIndexedSet<Integer> {
-			private int from;
-			private int to;
-
 			public LazyIntegerSet(final int from, final int to) {
 				super(new F.Mapper<Integer, Integer>() {
 					public Integer map(Integer index) {
@@ -788,12 +787,9 @@ public class F {
 		}
 		
 		public static class LazyIntegerList extends LazyList<Integer> {
-			private int from;
-			private int to;
-
 			public LazyIntegerList(final int from, final int to) {
 				super(new F.LazyListDataSource<Integer>() {
-					public Integer get(int index, F.LazyList ll) {
+					public Integer get(int index, @SuppressWarnings("rawtypes") F.LazyList ll) {
 						return from + index;
 					}
 					

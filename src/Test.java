@@ -24,28 +24,28 @@ public class Test {
 		testLazyEvaluation();
 		// TODO - Concurrency for Lazy Datastructures
 		
-		//testConcurrency();
+		testConcurrency();
 		
-		System.out.println("..");
-		F.LazyList<Future<Integer>> ll = F.FixedThreadConcurrency.getLazyList(new F.LazyListDataSource<Integer>() {
-			public Integer get(int i, F.LazyList<Integer> l)  {
-				return i;
-			}
-			
-			public int size() {
-				return 5;
-			}
-			
-			public boolean shouldCache() {
-				return true;
-			}
-		});
-		
-		for (Future<Integer> fi : ll) {
-			System.out.println(fi.get());
-		}
-		
-		F.FixedThreadConcurrency.finishService();
+		// System.out.println("..");
+		// 		F.LazyList<Future<Integer>> ll = F.FixedThreadConcurrency.getLazyList(new F.LazyListDataSource<Integer>() {
+		// 			public Integer get(int i, F.LazyList<Integer> l)  {
+		// 				return i;
+		// 			}
+		// 			
+		// 			public int size() {
+		// 				return 5;
+		// 			}
+		// 			
+		// 			public boolean shouldCache() {
+		// 				return true;
+		// 			}
+		// 		});
+		// 		
+		// 		for (Future<Integer> fi : ll) {
+		// 			System.out.println(fi.get());
+		// 		}
+		// 		
+		// 		F.FixedThreadConcurrency.finishService();
 	}
 	
 
