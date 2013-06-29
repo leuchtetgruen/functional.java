@@ -1,12 +1,11 @@
 package de.leuchtetgruen;
 
-import java.util.List;
-
 import android.os.AsyncTask;
+import de.leuchtetgruen.F.LazyList;
 import de.leuchtetgruen.F.Runner;
 
 public class AndroidF {
-	public static <T> void performOnListAsync(final List<T> l, int index, final Runner<T> r) {
+	public static <T> void performAsyncOnLazyList(final LazyList<T> l, int index, final Runner<T> r) {
 		AsyncTask<Integer, Integer, T> at = new AsyncTask<Integer, Integer, T>() {
 
 			@Override
