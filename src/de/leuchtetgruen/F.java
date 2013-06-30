@@ -39,6 +39,10 @@ public class F {
 		public U map(T o);
 	}
 	
+	public static interface LazyMapper<T,U> {
+		public U map(T o, LazyList<U> l);
+	}
+	
 	public static interface Reducer<T,U> {
 		public U reduce(U memo, T o);
 	}
@@ -359,16 +363,13 @@ public class F {
 	public static class LazyList<T> implements List<T> {
 		
 		private LazyListDataSource<T> dataSource;
-		private ArrayList<T> cache;
+		private HashMap<Integer, T> hCache;
 		private boolean shouldCache;
 		
 		public LazyList(LazyListDataSource<T> source) {
 			this.shouldCache = source.shouldCache();
 			if (shouldCache) {
-				this.cache = new ArrayList<T>(source.size());
-				for (int i=0; i< source.size(); i++) {
-					this.cache.add(null);
-				}
+				this.hCache = new HashMap<Integer, T>();
 			}
 			this.dataSource = source;			
 		}
@@ -399,10 +400,10 @@ public class F {
 		}
 		public T get(int index) {
 			if (shouldCache) {
-				T ret = cache.get(index);
+				T ret = hCache.get(index);
 				if (ret==null) {
 					ret = dataSource.get(index, this);
-					cache.set(index, ret);
+					hCache.put(index, ret);
 				}
 				return ret;
 			}
@@ -547,7 +548,7 @@ public class F {
 		
 	}
 	
-	public static <T,U> LazyList<U> lazyMap(final List<T> c, final Mapper<T,U> mapper) {
+	public static <T,U> LazyList<U> lazyMap(final List<T> c, final Mapper<T,U> mapper, final boolean shouldCache) {
 		return new LazyList<U>(new LazyListDataSource<U>() {
 			public U get(int i, @SuppressWarnings("rawtypes") F.LazyList ll) {
 				return mapper.map(c.get(i));
@@ -558,8 +559,29 @@ public class F {
 			}
 			
 			public boolean shouldCache() {
-				return true;
+				return shouldCache;
 			}			
+		});
+	}
+	
+	public static <T> LazyList<T> infiniteLazyList(final LazyMapper<Integer, T> mapper) {
+		return new LazyList<T>(new LazyListDataSource<T>() {
+
+			@Override
+			public T get(int index, LazyList<T> ll) {
+				return mapper.map(index, ll);
+			}
+
+			@Override
+			public int size() {
+				return Integer.MAX_VALUE;
+			}
+
+			@Override
+			public boolean shouldCache() {
+				return true;
+			}
+			
 		});
 	}
 	
@@ -816,6 +838,14 @@ public class F {
 			long time = measureExecutionTime(r);
 			System.out.println("Done.");
 			System.out.println("Execution time: " + time + "ms");
+		}
+		
+		public static <T> boolean in(T[] arr, final T elem) {
+			return F.isValidForAny(arr, new F.Decider<T>() {
+				public boolean decide(T o) {
+					return (o.equals(elem));
+				}
+			});
 		}
 		
 	}

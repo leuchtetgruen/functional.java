@@ -22,9 +22,10 @@ public class Test {
 		testMinMax(arr, c);
 		testGroup(arr, c);
 		testLazyEvaluation();
-		// TODO - Concurrency for Lazy Datastructures
 		
-		testConcurrency();
+	
+		
+		//testConcurrency();
 		
 		// System.out.println("..");
 		// 		F.LazyList<Future<Integer>> ll = F.FixedThreadConcurrency.getLazyList(new F.LazyListDataSource<Integer>() {
@@ -47,6 +48,7 @@ public class Test {
 		// 		
 		// 		F.FixedThreadConcurrency.finishService();
 	}
+	
 	
 
 	
@@ -109,6 +111,18 @@ public class Test {
 		F.LazyList<Long> fibonacciSublist = (F.LazyList<Long>) fibonacciList.subList(2,10); // still lazy
 		Long[] fibonacciArr = fibonacciSublist.toArray(new Long[fibonacciSublist.size()]); // toArray makes it become non lazy
 		F.Utils.print(fibonacciArr);
+		
+
+		// or we could do it like this
+		F.LazyList<Long> fib = F.infiniteLazyList(new F.LazyMapper<Integer, Long>() {
+			public Long map(Integer n, F.LazyList<Long> l) {
+				return ((n==0) || (n==1)) ? n : l.get(n-2) + l.get(n-1);
+			}
+		});
+		
+		F.Utils.print(fib.subList(2,10));
+		
+
 	}
 
 	private static void testEach(String[] arr, List<String> c) {
