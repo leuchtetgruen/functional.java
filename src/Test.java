@@ -28,7 +28,7 @@ public class Test {
 		//testConcurrency();
 		
 		// System.out.println("..");
-		// 		F.LazyList<Future<Integer>> ll = F.FixedThreadConcurrency.getLazyList(new F.LazyListDataSource<Integer>() {
+		// 		F.LazyList<Future<Integer>> ll = F.FixedThreadConcurrency.getConcurrentLazyList(new F.LazyListDataSource<Integer>() {
 		// 			public Integer get(int i, F.LazyList<Integer> l)  {
 		// 				return i;
 		// 			}

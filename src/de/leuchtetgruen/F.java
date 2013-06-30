@@ -682,7 +682,7 @@ public class F {
 			return ret;
 		}
 		
-		public <T> F.LazyListDataSource<Future<T>> getLazyListDataSource(final LazyListDataSource<T> dataSource) {
+		public <T> F.LazyListDataSource<Future<T>> getConcurrentLazyListDataSource(final LazyListDataSource<T> dataSource) {
 			return new LazyListDataSource<Future<T>>() {
 				public Future<T> get(final int index, final F.LazyList<Future<T>> ll) {
 					Callable<T> c = new Callable<T>() {
@@ -705,8 +705,8 @@ public class F {
 		}
 		
 		// After using this lazy list remember to call Concurrency.finishService();
-		public <T> F.LazyList<Future<T>> getLazyList(final LazyListDataSource<T> dataSource) {
-			return new F.LazyList<Future<T>>(getLazyListDataSource(dataSource));
+		public <T> F.LazyList<Future<T>> getConcurrentLazyList(final LazyListDataSource<T> dataSource) {
+			return new F.LazyList<Future<T>>(getConcurrentLazyListDataSource(dataSource));
 		}
 		
 	}
