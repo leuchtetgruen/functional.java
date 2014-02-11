@@ -67,7 +67,23 @@ public class F {
 		public void run(T k, U v);
 	}
 	
+	/**
+	 * @author Hannes Walz<info@leuchtetgruen.de>
+	 *
+	 * @param <T>
+	 * @param <U>
+	 * 
+	 * A mapper maps each element of a set to another element. It maps from T to U.
+	 * 
+	 */
 	public static interface Mapper<T,U> {
+		/**
+		 * This method will be called for each element of the set. It should convert
+		 * the given element
+		 * 
+		 * @param o
+		 * @return
+		 */
 		public U map(T o);
 	}
 	
