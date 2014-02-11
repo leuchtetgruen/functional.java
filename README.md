@@ -50,7 +50,38 @@ Let's assume that we need the string representation of the double of each number
 			}
 		});
 		
-		System.out.println(doubleStrings.join(", "));
+		System.out.println(doubleStrings.join(", ")); // 2, 4, 6, 8, 10, ...
 ```
 
 As a bonus, using the join method of CollectionUtils we even have it as a comma separated string.
+
+##reduce
+
+Ok reducing is rather tricky. Say you want to have the sum of the numbers between 1 and 10. You could use a reduce method like this:
+
+```java
+		Integer sum = numberListWithExtensions.reduce(new F.Reducer<Integer, Integer>() {
+			public Integer reduce(Integer memo, Integer i) {
+				return memo + i;
+			}
+		}, 0);
+		
+		System.out.println(sum); // 55
+```
+
+Everytime the reduce method is called the memo parameter is the result of the computation so far. So for the first call it is 0 (because we passed 0 as the second parameter for the call). For the next call it is 0 + 1 = 1. For the next call it is 1 + 2 = 3. For the next it is 3 + 3 = 6 and so on. I hope you get the idea. You can also use this method to calculate the minimum or maximum of a collection (but there's a different easier method for that).
+
+
+##filter and reject
+
+Filter and reject are two sides of the same coin. Let's filter our list and only get the odd numbers:
+
+```java
+		CollectionUtils<Integer> oddNumbers = numberListWithExtensions.filter(new F.Decider<Integer>() {
+			public boolean decide(Integer o) {
+				return ((o % 2) == 1);
+			}
+		});
+		
+		System.out.println(oddNumbers.join(", ")); // 1, 3, 5, 7, 9
+```
