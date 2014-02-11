@@ -27,11 +27,43 @@ import java.util.concurrent.TimeUnit;
  */
 public class F {
 	// INTERFACES
+	
+	
+	/**
+	 * @author Hannes Walz<info@leuchtetgruen.de>
+	 *
+	 * @param <T>
+	 * 
+	 * Runners are used to be run on each element of a set of elements
+	 * 
+	 */
 	public static interface Runner<T> {
+		/**
+		 * This method will be called for each element. Please make sure
+		 * that you dont assume sequential execution of elements.
+		 * 
+		 * @param o
+		 */
 		public void run(T o);
 	};
 	
+	/**
+	 * @author Hannes Walz<info@leuchtetgruen.de>
+	 *
+	 * @param <T>
+	 * @param <U>
+	 * 
+	 * Runners are used to be run on each key value pair of the hash.
+	 * 
+	 */
 	public static interface HashRunner<T,U> {
+		/**
+		 * This method will be called for each element. Please make sure
+		 * that you dont assume sequential execution of elements.
+		 * 
+		 * @param k
+		 * @param v
+		 */
 		public void run(T k, U v);
 	}
 	
