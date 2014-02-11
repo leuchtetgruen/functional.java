@@ -85,3 +85,19 @@ Filter and reject are two sides of the same coin. Let's filter our list and only
 		
 		System.out.println(oddNumbers.join(", ")); // 1, 3, 5, 7, 9
 ```
+
+So if we wanted to have the even numbers we could have used the same decider but would have called reject instead.
+
+##isValidforAll and isValidForAny
+
+Say we want to know if any number in the list is divisible by 7. This is how we would do it:
+
+```java
+		boolean anyDivisibleBySeven = numberListWithExtensions.isValidForAny(new F.Decider<Integer>() {
+			public boolean decide(Integer i) {
+				return ((i % 7)==0);
+			}
+		});
+		
+		System.out.println(anyDivisibleBySeven ? "At least 1 of them is divisible by 7" : "Sorry - no");
+```
