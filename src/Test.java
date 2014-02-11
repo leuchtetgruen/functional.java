@@ -174,8 +174,8 @@ public class Test {
 	private static void testFilterAndRejectAndFind(String[] arr, List<String> c) {
 		System.out.println("Testing -> filter and reject and find");
 		
-		F.Utils.print(F.filter(arr, moreThanOneWordDecider));
-		System.out.println("--");
+//		F.Utils.print(F.filter(arr, moreThanOneWordDecider));
+//		System.out.println("--");
 		F.Utils.print(F.filter(c, moreThanOneWordDecider));
 		System.out.println("~");
 		F.Utils.print(F.reject(arr, moreThanOneWordDecider));
