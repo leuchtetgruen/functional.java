@@ -1,5 +1,5 @@
-Functional.java (F.java)
-========================
+Functional.java
+===============
 
 A set of java classes that makes writing concise java applications (be it mobile or desktop) easier
 by using the functional programm paradigm.
@@ -23,4 +23,14 @@ First let's create a CollectionsUtils instance, that contains numbers from 1 to 
 		CollectionUtils<Integer> numberListWithExtensions = new CollectionUtils<Integer>(numberList);
 		// Have it printed
 		F.Utils.print(numberListWithExtensions);
+```
+
+The last call is using the utility class. We could have also used the each method of the list:
+
+```java
+		numberListWithExtensions.each(new F.Runner<Integer>() {
+			public void run(Integer o) {
+				System.out.println(o);
+			}
+		});
 ```
