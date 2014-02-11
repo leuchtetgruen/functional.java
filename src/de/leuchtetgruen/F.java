@@ -19,10 +19,11 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * @author Hannes Walz<info@leuchtetgruen.de>
- *
  * This class provides some functional programming to collection/array handling in
  * java allowing you to write much more concise code. 
+ *
+ * @author Hannes Walz<info@leuchtetgruen.de>
+ *
  *
  */
 public class F {
@@ -30,11 +31,12 @@ public class F {
 
 
 	/**
+	 * Runners are used to be run on each element of a set of elements
+	 * 
 	 * @author Hannes Walz<info@leuchtetgruen.de>
 	 *
 	 * @param <T>
-	 * 
-	 * Runners are used to be run on each element of a set of elements
+	 *
 	 * 
 	 */
 	public static interface Runner<T> {
@@ -48,12 +50,13 @@ public class F {
 	};
 
 	/**
+	 * Runners are used to be run on each key value pair of the hash.
+	 * 
 	 * @author Hannes Walz<info@leuchtetgruen.de>
 	 *
 	 * @param <T>
 	 * @param <U>
-	 * 
-	 * Runners are used to be run on each key value pair of the hash.
+	 *
 	 * 
 	 */
 	public static interface HashRunner<T,U> {
@@ -68,25 +71,31 @@ public class F {
 	}
 
 	/**
+	 * A mapper converts elements. E.g. a mapper could calculate the double of each value in an integer set.
+	 * 
 	 * @author Hannes Walz<info@leuchtetgruen.de>
 	 *
 	 * @param <T>
 	 * @param <U>
-	 * 
-	 * A mapper maps each element of a set to another element. It maps from T to U.
-	 * 
 	 */
 	public static interface Mapper<T,U> {
 		/**
-		 * This method will be called for each element of the set. It should convert
-		 * the given element.
+		 * This method is called for each item of a set.
 		 * 
-		 * @param o - the current element
+		 * @param o
 		 * @return
 		 */
 		public U map(T o);
 	}
 
+	/**
+	 * A lazymapper is used to create a lazylist from a mapping function.
+	 * 
+	 * @author Hannes Walz<info@leuchtetgruen.de>
+	 *
+	 * @param <T>
+	 * @param <U>
+	 */
 	public static interface LazyMapper<T,U> {
 		public U map(T o, LazyList<U> l);
 	}
@@ -112,7 +121,20 @@ public class F {
 		public U reduce(U memo, T o);
 	}
 
+	/**
+	 * A decider returns true or false for an element
+	 * 
+	 * @author Hannes Walz <info@leuchtetgruen.de>
+	 *
+	 * @param <T>
+	 */
 	public static interface Decider<T> {
+		/**
+		 * Called for each element of the set. Should return true or false
+		 * 
+		 * @param o
+		 * @return
+		 */
 		public boolean decide(T o);
 	}
 
@@ -138,6 +160,13 @@ public class F {
 		public int compare(T o1, T o2);
 	}
 
+	/**
+	 * A datasource for a lazy list
+	 * 
+	 * @author Hannes Walz<info@leuchtetgruen.de>
+	 *
+	 * @param <T>
+	 */
 	public static interface LazyListDataSource<T> {
 		public T get(int index, LazyList<T> ll);
 		public int size();
@@ -1023,6 +1052,13 @@ public class F {
 
 
 	// UTILS
+	/**
+	 * This class contains a couple of utilities that can be used in combination
+	 * with the methods and datastructures defined in F
+	 * 
+	 * @author Hannes Walz <info@leuchtetgruen.de>
+	 *
+	 */
 	public static class Utils {
 
 		/**
