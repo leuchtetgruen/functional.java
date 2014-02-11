@@ -25,6 +25,8 @@ First let's create a CollectionsUtils instance, that contains numbers from 1 to 
 		F.Utils.print(numberListWithExtensions);
 ```
 
+##each 
+
 The last call is using the utility class. We could have also used the each method of the list:
 
 ```java
