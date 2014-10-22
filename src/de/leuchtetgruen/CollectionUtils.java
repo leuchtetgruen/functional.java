@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 import de.leuchtetgruen.F;
+import de.leuchtetgruen.F.Runner;
+
 
 /**
  * This class extends the basic collection class with a couple of useful methods partially 
@@ -211,6 +213,39 @@ public class CollectionUtils<T> extends AbstractCollection<T> {
 				return (o==null);
 			}
 		});
+	}
+	
+	/**
+	 * In case of a Collection of collections flatten this multidimendsional collection
+	 * to a 1-dimensional one. E.g. [[1,2,3],[3,4]] becomes [1,2,3,3,4]
+	 * 
+	 * @return
+	 */
+	public CollectionUtils<T> flatten() {
+		final ArrayList<T> returnList = new ArrayList<T>();
+		each(new Runner<T>() {
+
+			@Override
+			public void run(T o) {
+				if (o instanceof Collection) {
+					returnList.addAll((Collection<? extends T>) o);
+				} 
+				else {
+					returnList.add(o);
+				}
+			}
+		});
+	
+		return new CollectionUtils<T>(returnList);
+	}
+	
+	/**
+	 * 
+	 * @return the same collection without duplicate entries
+	 */
+	public CollectionUtils<T> unique() {
+		List<T> newList = new ArrayList<T>(new HashSet<T>(this));
+		return new CollectionUtils<T>(newList);
 	}
 	
 }
