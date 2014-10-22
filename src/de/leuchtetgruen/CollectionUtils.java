@@ -271,7 +271,7 @@ public class CollectionUtils<T> extends AbstractCollection<T> {
 				
 			}
 		});
-		return new CollectionUtils(returnList);
+		return new CollectionUtils<T>(returnList);
 	}
 	
 }
