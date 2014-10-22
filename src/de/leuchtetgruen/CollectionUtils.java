@@ -2,12 +2,16 @@ package de.leuchtetgruen.utils;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.beuthhochschule.momoprojekt.stoerungen.BusinessObjects.Line;
 
 import de.leuchtetgruen.F;
 import de.leuchtetgruen.F.Comparator;
@@ -250,6 +254,24 @@ public class CollectionUtils<T> extends AbstractCollection<T> {
 	public CollectionUtils<T> unique() {
 		List<T> newList = new ArrayList<T>(new HashSet<T>(this));
 		return new CollectionUtils<T>(newList);
+	}
+	
+	/**
+	 * Orders this collection according to the order given in an array
+	 * @param arr
+	 * @return
+	 */
+	public CollectionUtils<T> orderByPosition(T[] arr) {
+		ArrayList<T> returnList = new ArrayList<T>(this);
+		final List<T> lArr = Arrays.asList(arr);
+		Collections.sort(returnList, new java.util.Comparator<T>() {
+			@Override
+			public int compare(T lhs, T rhs) {
+				return F.Utils.intCompare(lArr.indexOf(lhs), lArr.indexOf(rhs));
+				
+			}
+		});
+		return new CollectionUtils(returnList);
 	}
 	
 }
