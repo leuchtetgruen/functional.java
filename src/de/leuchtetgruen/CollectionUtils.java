@@ -1,4 +1,4 @@
-package de.leuchtetgruen;
+package de.leuchtetgruen.utils;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Set;
 
 import de.leuchtetgruen.F;
+import de.leuchtetgruen.F.Comparator;
+import de.leuchtetgruen.F.Decider;
+import de.leuchtetgruen.F.Mapper;
+import de.leuchtetgruen.F.Reducer;
 import de.leuchtetgruen.F.Runner;
 
 
@@ -221,7 +225,7 @@ public class CollectionUtils<T> extends AbstractCollection<T> {
 	 * 
 	 * @return
 	 */
-	public CollectionUtils<T> flatten() {
+	public CollectionUtils<?> flatten() {
 		final ArrayList<T> returnList = new ArrayList<T>();
 		each(new Runner<T>() {
 
@@ -236,7 +240,7 @@ public class CollectionUtils<T> extends AbstractCollection<T> {
 			}
 		});
 	
-		return new CollectionUtils<T>(returnList);
+		return new CollectionUtils(returnList);
 	}
 	
 	/**
